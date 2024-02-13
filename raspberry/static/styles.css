@@ -1,0 +1,3 @@
+.max-text-size {
+    font-size: min(max(24px, 5vw), 100px); /* Responsive size with min and max boundaries */
+}

@@ -1,0 +1,251 @@
+<h1>Device Control</h1>
+<div class="d-flex flex-column mb-3 p-2">
+    <% for (device of devices) {
+        if (device['type'] != 'relay') continue;
+        %>
+        <form method="post">
+            <div class="row">
+                <div class="col p-2">
+                    <input type="hidden" name="device-id" value="<%= device["id"] %>" />
+                        <% if (device['state'] == 'on' || device['state'] == 'off') { %>
+                            <button type="submit" name="enable-device" value="<%- device['id']-%>" class="btn btn-success">Enable heating</button>
+                            <div class="mt-3">
+                                <button type="submit" name="block-device" value="<%- device['id']-%>" class="btn btn-warning">Block relay</button>
+                            </div>
+                        <% } else { %>
+                            <button type="submit" name="unblock-device" value="<%- device['id']-%>" class="btn btn-success">Unblock relay</button>
+                        <% } %>
+                </div>
+                <div class="col p-2">
+                    <% if (device["status"] == 'online') { %>
+                        <span class="text-success align-middle fw-bold">Online</span>
+                    <% } else { %>
+                        <span class="text-secondary align-middle fw-bold">Offline</span>
+                    <% } %>
+                </div>
+                <div class="col p-2">
+                    <% if (device["state"] == 'on') { %>
+                        <span class="text-success align-middle fw-bold">Enabled</span>
+                    <% } else if (device["state"] == 'off') { %>
+                        <span class="text-secondary align-middle fw-bold">Disabled</span>
+                    <% } else if (device["state"] == 'blocked') { %>
+                        <span class="text-warning align-middle fw-bold">Blocked</span>
+                    <% } %>
+                </div>
+                <% if (device['status'] == 'online') { %>     
+                    <div class="col p-2">
+                        <label for="time-<%= device["id"] %>">
+                            Enable for mins:
+                        </label>
+                        <select class="form-select" id="time-<%= device["id"] %>" name="enable-minutes">
+                            <option value="1">1</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                            <option value="120">120</option>
+                        </select>
+                    </div>
+                <% } %>
+            </div>
+
+            <h2>Scheduled actions: </h2>
+            <% for (action of device['actions']) { %>
+                <div class="row border">
+                    <div class="col-1 p-1">
+                        <p class="mb-0"><%- action['id'] -%></p>
+                    </div>
+                    <div class="col p-1">
+                        <b><%- action['type'] -%></b>
+                    </div>
+                    <% if (action['enabled_until']) { %>
+                        <div class="col p-1">
+                            <p>Enabled until:</p>
+                            <p class="mb-0"><%- action['enabled_until'].toTime() -%></p>
+                        </div>
+                    <% } %>
+                    <% if (action['time_from']) { %>
+                        <div class="col p-1">
+                            <p>Time From:</p>
+                            <p class="mb-0"><%- action['time_from'] -%></p>
+                        </div>
+                    <% } %>
+                    <% if (action['time_to']) { %>
+                        <div class="col p-1">
+                            <p>Time To:</p>
+                            <p class="mb-0"><%- action['time_to'] -%></p>
+                        </div>
+                    <% } %>
+                    <% if (action['sensor_min_value']) { %>
+                        <div class="col p-1">
+                            <p>Sensor Min Value:</p>
+                            <p class="mb-0"><%- action['sensor_min_value'] -%></p>
+                        </div>
+                    <% } %>
+                    <% if (action['sensor_max_value']) { %>
+                        <div class="col p-1">
+                            <p>Sensor Max Value:</p>
+                            <p class="mb-0"><%- action['sensor_max_value'] -%></p>
+                        </div>
+                    <% } %>
+                    <% if (action['sensor_id']) { %>
+                        <div class="col p-1">
+                            <p>Sensor</p>
+                            <p><%- deviceMap[action['sensor_id']]['name'] -%></p>
+                            <p class="mb-0"><%- action['sensor_id'].cutExceptLast4() -%></p>
+                        </div>
+                    <% } %>
+                    <div class="col p-1">
+                        <p>Created:</p>
+                        <p class="mb-0"><%- action['created'].toTime() -%></p>
+                    </div>
+
+                    <div class="col p-1">
+                        <button type="submit" name="delete-action" value="<%- action['id'] -%>" class="btn btn-danger">Delete Action</button>
+                    </div>
+                </div>
+            <% } %>
+
+            <h2>Control:</h2>
+            <div class="row mb-3 border align-middle">
+                <div class="col p-2">
+                    Link a sensor:
+                </div>
+                <div class="col  p-2">
+                    <select class="form-select" id="sensor-<%= device["id"] %>" name="sensor-id">
+                        <option value="">None</option>
+                        <% for (device of devices) { 
+                            if (device['type'] != 'thermo') continue;
+                            %>
+                            <option value="<%- device['id'] -%>"><%= device['name'] %>(<%- device['id'] -%>)</option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col  p-2">
+                    Time from:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="sensor-from-<%= device["id"] %>" name="sensor-time-from">
+                        <option value="">None</option>
+                        <% 
+                        let originalTime = moment("2010-10-20 23:30:00")
+                        for (let i = 0; i < 48; i++) { 
+                            let time = originalTime.add(30, 'minutes').format("HH:mm");
+                            %>
+                            <option value="<%- time -%>"><%- time -%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col p-2">
+                    Time to:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="sensor-to-<%= device["id"] %>"  name="sensor-time-to">
+                        <option value="">None</option>
+                        <% 
+                        originalTime = moment("2010-10-20 00:00:00")
+                        for (let i = 0; i < 47; i++) { 
+                            let time = originalTime.add(30, 'minutes').format("HH:mm");
+                            %>
+                            <option value="<%- time -%>"><%- time -%></option>
+                        <% } %>
+                        <option value="23:59">23:59</option>
+                    </select>
+                </div>
+
+                <div class="col p-2">
+                    Min temperature:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="sensor-min-<%= device["id"] %>"  name="sensor-min-value">
+                        <% 
+                        let temperature = 10;
+                        for (let i = 0; i < 30; i++) { 
+                            let value = temperature + i / 2;
+                            %>
+                            <option value="<%- value -%>"><%- value -%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col p-2">
+                    Max temperature:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="sensor-max-<%= device["id"] %>"  name="sensor-max-value">
+                        <% 
+                        temperature = 10;
+                        for (let i = 0; i < 30; i++) { 
+                            let value = temperature + i / 2;
+                            %>
+                            <option value="<%- value -%>"><%- value -%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col p-2"></div>
+                <div class="col p-2">
+                    <button type="submit" name="link-device" value="<%- device['id'] -%>" class="btn btn-success">Link sensor</button>
+                </div>
+            </div>
+
+
+            <div class="row mb-3 border align-middle">
+                <div class="col p-2">
+                    Schedule:
+                </div>
+                <div class="col p-2">
+                    Time from:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="schedule-from-<%= device["id"] %>" name="schedule-from">
+                        <option value="">None</option>
+                        <% 
+                        originalTime = moment("2010-10-20 23:30:00")
+                        for (let i = 0; i < 48; i++) { 
+                            let time = originalTime.add(30, 'minutes').format("HH:mm");
+                            %>
+                            <option value="<%- time -%>"><%- time -%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col p-2">
+                    Time to:
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="schedule-to-<%= device["id"] %>" name="schedule-to">
+                        <option value="">None</option>
+                        <% 
+                        originalTime = moment("2010-10-20 00:00:00")
+                        for (let i = 0; i < 48; i++) { 
+                            let time = originalTime.add(30, 'minutes').format("HH:mm");
+                            %>
+                            <option value="<%- time -%>"><%- time -%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col p-2">
+                    <select class="form-select" id="schedule-state-<%= device["id"] %>" name="schedule-state">
+                        <option value="1">Enabled</option>
+                        <option value="0">Disabled</option>
+                    </select>
+                </div>
+                <div class="col p-2"></div>
+                <div class="col p-2">
+                    <button type="submit" name="add-schedule" value="<%- device['id'] -%>" class="btn btn-success">Add schedule</button>
+                </div>
+            </div>
+        </form>
+    <% } %>
+</div>
+
+<h2>Relay Logs</h2>
+<div class="col mb-3">
+    <% for (log of relayLogs) { %>
+        <div class="row mb-3 border align-middle">
+            <div class="p-2 align-middle col"><%= log['state'] %></div>
+            <div class="p-2 align-middle col"><%= log['change_reason'] %></div>
+            <div class="p-2 align-middle col-1"><%= moment(log['created']).format("HH:mm:ss M-DD") %></div>
+        </div>
+    <% } %>
+</div>

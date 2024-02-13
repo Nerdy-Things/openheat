@@ -1,0 +1,4 @@
+dependencies:
+  espressif/sh2lib: "^1.0.0"
+  ds18b20: "^0.1.0"
+  
