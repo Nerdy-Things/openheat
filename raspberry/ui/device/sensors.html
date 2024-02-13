@@ -1,0 +1,32 @@
+<div id="app">
+    <form method="post">
+        <% for (device of devices) { %>
+            <div class="row mb-3">
+                <!-- Column for Device ID (Hidden + Text View) -->
+                <div class="col-3">
+                    <label for="device_id" class="form-label">Device ID:</label>
+                    <input type="hidden" name="device_id[]" value="<%- device['id'] -%>"> 
+                    <input type="text" readonly class="form-control-plaintext" value="<%- device['id'] -%>">
+                </div>
+
+                <!-- Column for Device Name -->
+                <div class="col">
+                    <label for="device_name" class="form-label">Device Name:</label>
+                    <input type="text" class="form-control" id="device_name[]" name="device_name" value="<%- device['name'] -%>" placeholder="Enter device name">
+                </div>
+
+                <!-- Column for Current Temperature -->
+                <div class="col-1">
+                    <label for="current_temperature" class="form-label">Current Temperature:</label>
+                    <input type="text" readonly class="form-control-plaintext" id="current_temperature" value="<%- device['temperature'] -%>">
+                </div>
+            </div>
+        <% } %>
+        <!-- Submit Button -->
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </form>
+</div>

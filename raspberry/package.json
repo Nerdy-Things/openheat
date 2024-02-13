@@ -1,0 +1,25 @@
+{
+  "name": "open_heat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@iiot2k/gpiox": "^1.5.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mariadb": "^3.2.3",
+    "moment": "^2.30.1",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

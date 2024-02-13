@@ -1,0 +1,87 @@
+<% if (temperatures.length > 0) { %>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="/moment.min.js" ></script>
+
+<script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            const temperature = <%- JSON.stringify(temperatures) -%>;
+            const deviceMap = <%- JSON.stringify(deviceMap) -%>;
+
+            const knownDevices = {}
+            const groupedByTime = temperature.reduce((acc, {device_id, temperature, rounded_time}) => {
+                if (!acc[rounded_time]) {
+                    acc[rounded_time] = {};
+                }
+                knownDevices[device_id] = true;
+                acc[rounded_time][device_id] = {};
+                acc[rounded_time][device_id]['temperature'] = temperature;
+                acc[rounded_time][device_id]['name'] = name;
+                return acc;
+            }, {});
+
+            // Create a DataTable
+            const dataTable = new google.visualization.DataTable();
+
+            dataTable.addColumn('datetime', 'Date Start');
+            Object.keys(knownDevices).forEach((key) => {
+              dataTable.addColumn('number', deviceMap[key]["name"] + " " + key.cutExceptLast4());
+            })
+            
+            const orderedTime = Object.keys(groupedByTime).sort();
+
+            // Add data rows to the DataTable
+            orderedTime.forEach(time => {
+              const row = [
+                new Date(time),
+              ];
+              const devicesData = groupedByTime[time]
+              for (device in knownDevices) {
+                if (devicesData[device]) {
+                  row.push(parseFloat(devicesData[device].temperature))
+                } else {
+                  row.push(null)
+                }
+              }
+              dataTable.addRow(row);
+            });
+
+            // Set chart options
+            const options = {
+              title: 'Temperature Over Time',
+              curveType: 'function',
+              legend: { position: 'bottom' }
+            };
+
+            // Instantiate and draw the LineChart
+            const chart = new google.visualization.LineChart(document.getElementById('chart-container'));
+            chart.draw(dataTable, options);
+        }
+</script>
+
+<!--Div that will hold the pie chart-->
+<div id="chart-container"  style="height: 500px;"></div>
+
+<div id="container" class="p-5">
+  <% for (log of relayLog) { %>
+    <div class="row">
+      <div class="col">
+        <%- log.created.toDateFormat() -%>
+      </div>
+      <div class="col">
+          <%- log.change_reason -%>
+      </div>
+      <div class="col">
+          <%- log.state -%>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<% } else { %>
+  <div class="row p-5">
+    <h2>No data from sensors. Are there any?</h2>
+  </div>
+<% } %>
