@@ -1,7 +1,7 @@
 <div class="row p-4">
     <% for (const deviceId in temperatureGrouped) { %>
-        <div style="width: <%- 100 / Object.keys(devices).length -%>%; float: left;" class="p-2"> 
-            <div style='display:block;'><%- devices[deviceId]['name'] +  deviceId.cutExceptLast4() -%></div>
+        <div style="width: <%- 100 / Object.keys(temperatureGrouped).length -%>%; float: left;" class="p-2"> 
+            <div style='display:block;'><%- deviceMap[deviceId]['name'] + " " + deviceId.cutExceptLast4() -%></div>
             <% for (temperature of temperatureGrouped[deviceId]) { %>
                 <div style='display:block;'>
                     <span style='width:100px;display: inline-block;'>
