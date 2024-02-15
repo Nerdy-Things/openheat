@@ -22,6 +22,3 @@
     require('./server_http.js');
     core.controller.relay.internal.startPeriodingChecking();
 })().catch(err => console.error(err));
-
-// TEST NGINX CONFIG!!!!
-
