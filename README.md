@@ -4,7 +4,7 @@ The opensorce library that can control an automated relay switch based on schedu
 
 # Youtube video
 
-!!
+[![Watch the video](/raspberry/static/images/04_thumbnail.png)](https://www.youtube.com/watch?v=MPbWI9NfuoY)
 
 # Repository Structure 
 
