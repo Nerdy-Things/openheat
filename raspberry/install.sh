@@ -28,9 +28,6 @@ sudo cp nginx/openheat.local /etc/nginx/sites-available/
 sudo cp nginx/openheat.local /etc/nginx/sites-enabled/ 
 sudo systemctl restart nginx
 
-# pm2 start ecosystem.config.js -env main
-#  --no-daemon    -!!! ??? 
-
 pm2 start ecosystem.config.js  --env production
 sudo env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u nerdythings --hp /home/nerdythings
 pm2 save
